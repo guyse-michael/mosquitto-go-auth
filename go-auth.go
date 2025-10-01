@@ -289,7 +289,7 @@ func AuthUnpwdCheck(username, password, clientAddress, clientid *C.char) uint8 {
 	var err error
 
 	for try := 0; try <= authPlugin.retryCount; try++ {
-		ok, err = authUnpwdCheck(C.GoString(username), C.GoString(password), C.GoString(clientAddress) C.GoString(clientid))
+		ok, err = authUnpwdCheck(C.GoString(username), C.GoString(password), C.GoString(clientAddress), C.GoString(clientid))
 		if err == nil {
 			break
 		}
