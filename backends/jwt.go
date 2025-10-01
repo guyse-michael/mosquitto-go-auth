@@ -3,7 +3,7 @@ package backends
 import (
 	"fmt"
 
-	jwtGo "github.com/golang-jwt/jwt"
+	jwtGo "github.com/golang-jwt/jwt/v4"
 	"github.com/iegomez/mosquitto-go-auth/hashing"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"

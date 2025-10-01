@@ -284,12 +284,12 @@ func setCache(authOpts map[string]string) {
 }
 
 //export AuthUnpwdCheck
-func AuthUnpwdCheck(username, password, clientid *C.char) uint8 {
+func AuthUnpwdCheck(username, password, clientAddress, clientid *C.char) uint8 {
 	var ok bool
 	var err error
 
 	for try := 0; try <= authPlugin.retryCount; try++ {
-		ok, err = authUnpwdCheck(C.GoString(username), C.GoString(password), C.GoString(clientid))
+		ok, err = authUnpwdCheck(C.GoString(username), C.GoString(password), C.GoString(clientAddress) C.GoString(clientid))
 		if err == nil {
 			break
 		}
@@ -307,7 +307,7 @@ func AuthUnpwdCheck(username, password, clientid *C.char) uint8 {
 	return AuthRejected
 }
 
-func authUnpwdCheck(username, password, clientid string) (bool, error) {
+func authUnpwdCheck(username, password, clientAddress, clientid string) (bool, error) {
 	var authenticated bool
 	var cached bool
 	var granted bool
@@ -337,16 +337,17 @@ func authUnpwdCheck(username, password, clientid string) (bool, error) {
 			return false, setAuthErr
 		}
 	}
+    log.WithFields(log.Fields{"ClientIP": clientAddress, "username": username, "clientId": clientid, "outcome": authenticated}).Infof("%s attempted to authenticate.", username)
 	return authenticated, err
 }
 
 //export AuthAclCheck
-func AuthAclCheck(clientid, username, topic *C.char, acc C.int) uint8 {
+func AuthAclCheck(clientid, username, clientAddress, topic *C.char, acc C.int) uint8 {
 	var ok bool
 	var err error
 
 	for try := 0; try <= authPlugin.retryCount; try++ {
-		ok, err = authAclCheck(C.GoString(clientid), C.GoString(username), C.GoString(topic), int(acc))
+		ok, err = authAclCheck(C.GoString(clientid), C.GoString(username), C.GoString(clientAddress), C.GoString(topic), int(acc))
 		if err == nil {
 			break
 		}
@@ -364,7 +365,7 @@ func AuthAclCheck(clientid, username, topic *C.char, acc C.int) uint8 {
 	return AuthRejected
 }
 
-func authAclCheck(clientid, username, topic string, acc int) (bool, error) {
+func authAclCheck(clientid, username, clientAddress, topic string, acc int) (bool, error) {
 	var aclCheck bool
 	var cached bool
 	var granted bool
@@ -396,6 +397,7 @@ func authAclCheck(clientid, username, topic string, acc int) (bool, error) {
 	}
 
 	log.Debugf("Acl is %t for user %s", aclCheck, username)
+	log.WithFields(log.Fields{"ClientIP": clientAddress, "username": username, "clientId": clientid, "topic": topic, "acc": acc, "outcome": aclCheck}).Infof("%s attempted an ACL check.", username)
 	return aclCheck, err
 }
 

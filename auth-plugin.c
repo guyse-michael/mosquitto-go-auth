@@ -81,6 +81,7 @@ int mosquitto_auth_unpwd_check(void *userdata, const char *username, const char 
 {
   #if MOSQ_AUTH_PLUGIN_VERSION >= 3
     const char* clientid = mosquitto_client_id(client);
+    const char* clientAddress = mosquitto_client_address(client);
   #else
     const char* clientid = "";
   #endif
@@ -90,7 +91,7 @@ int mosquitto_auth_unpwd_check(void *userdata, const char *username, const char 
     return MOSQ_ERR_AUTH;
   }
 
-  GoUint8 ret = AuthUnpwdCheck((char *)username, (char *)password, (char *)clientid);
+  GoUint8 ret = AuthUnpwdCheck((char *)username, (char *)password, (char *)clientAddress, (char *)clientid);
 
   switch (ret)
   {
@@ -119,6 +120,7 @@ int mosquitto_auth_acl_check(void *userdata, const char *clientid, const char *u
 {
   #if MOSQ_AUTH_PLUGIN_VERSION >= 3
     const char* clientid = mosquitto_client_id(client);
+    const char* clientAddress = mosquitto_client_address(client);
     const char* username = mosquitto_client_username(client);
     const char* topic = msg->topic;
   #endif
@@ -128,7 +130,7 @@ int mosquitto_auth_acl_check(void *userdata, const char *clientid, const char *u
     return MOSQ_ERR_ACL_DENIED;
   }
 
-  GoUint8 ret = AuthAclCheck((char *)clientid, (char *)username, (char *)topic, access);
+  GoUint8 ret = AuthAclCheck((char *)clientid, (char *)username, (char *)clientAddress, (char *)topic, access);
 
   switch (ret)
   {
